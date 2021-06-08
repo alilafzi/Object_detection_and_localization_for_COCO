@@ -1,1 +1,14 @@
 # Object_detection_and_localization_on_COCO_dataset
+
+## Project description
+This repository deals with the detection and localization of a single object in COCO images for multiple classes. In other words, the goal is to classify the image by the label of its most dominant object as well as assigning the required coordinates of a bounding box to cover it. Consequently, the designed neural network has 2 separate sections for classification and regression. In each of the notebooks, images belonging to 5 different classes are downloaded and are resized to 128x128 pixels. Accordingly, the corresponding 4 coordinates of the true bounding boxes (x and y of the top left corner and width and height of the box) are scaled. The scaled values of these 4 points are then saved to a text file as a list with the same name as that of the downloaded image. This makes the data loading process easier. <br>
+
+## Network architecture
+At the very beginning, which is the common part between the classification and regression, it consists of a single convolutional layer accompanied by batch normalization, ReLU activation, and max pooling. Then it is divided into 2 separate branches: <br>
+Classification: it comprises of 3 blocks having 2 layers each and being repeated 2, 3, and 2 times, respectively (adding up to a total of 14 layers). Each block includes 2 convolutional layers, each of which is followed by batch normalization, and a ReLU activation. At the end
+of each block before the second ReLU activation, a down-sampling occurs. This helps the deep network remember its previous solution in case of vanishing gradients in the computational graph. If we are in the same block, the implemented down-sampling function simply mixes and adds up the block output with its input. However, if we are changing blocks, the down-sampling operator both resizes the image to half of it by using a kernel of size 1 and stride of 2 and doubles the number of channels for the next block. As a result, the output from the very last block is 16x16 with 256 channels (the input was a 128x128 image with 3 RGB channels). This skip-block output is then connected to the main output consisting of a single fully-connected layer with a ReLU activation. Finally, it is connected to an output layer, where its number of neurons equals the number of classes (5 in here). The loss is Cross-Entropy. <br>
+Regression: it consists of 2 convolutional layers, each with in_channels=64, out_channels=64, kernel_size=3, padding=1, batch normalization and a ReLU function activation. Therefore, the output is a 64x64 image with 64 channels. It will then be connected to 2 fully-connected layers and an output layer that has 4 neurons (number of variables to define a bounding box). The loss is Mean Squared Error. <br>
+
+## Reference:
+https://github.com/aladdinpersson
+
